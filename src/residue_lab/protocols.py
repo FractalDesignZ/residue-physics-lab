@@ -2,7 +2,6 @@ from residue_lab import physics
 from residue_lab.chart import lab_covers
 from residue_lab.claims import TERMS, apply_l2
 from residue_lab.grader import certify, leftover_weight_frac
-from residue_lab.types import Verdict
 from residue_lab.units import DEFAULT_LAB_DISK, gem_lab_floor_dg_over_g
 
 WEIGHT_FLOOR = 1e-12
@@ -11,7 +10,9 @@ def protocol_ehd():
     covers = lab_covers()
     air = physics.l1_ehd(covers["ehd_air"])
     vac = physics.l1_ehd(covers["ehd_vacuum"])
-    air_c = certify("ehd_air", 0.0, 1e-9, forced_verdict=Verdict.OPEN, notes={"force_z": f"{air.force_z:.3e}"})
+    # Leftover after the L1 ion-wind model is 0 by construction (L1 is the whole model); the verdict is computed,
+    # not forced. This changes the ehd_air certificate from the previously forced OPEN to OPEN_NULL.
+    air_c = certify("ehd_air", 0.0, 1e-9, notes={"force_z": f"{air.force_z:.3e}", "accounted_by": "L1 ion wind"})
     vac_c = certify("ehd_vacuum", vac.force_z, 1e-9, notes={"force_z": f"{vac.force_z:.3e}"})
     return air_c, vac_c
 
